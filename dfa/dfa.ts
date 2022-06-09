@@ -1,15 +1,14 @@
-import { throws } from "assert";
-
-type State = {
+export type State = {
     name: number | string;
 }
 
-type Alphabet = Set<string>;
-type Transition = [State,string,State];
-type Delta = Set<Transition>;
+export type Alphabet = Set<string>;
+export type Transition = [State,string,State];
+export type Delta = Set<Transition>;
 type arrSet<T> = Array<T> | Set<T>;
+const break_string = '_________________________________________________________________________________________';
 
-class DFA {
+export class DFA {
     private Q;
     private S;
     private d;
@@ -18,15 +17,14 @@ class DFA {
     private name;
 
     print () {
-        console.log('_________________________________________________________________________________________');
+        console.log(break_string);
         console.log(`DFA: ${this.name}`);
         console.log(`Q: ${this.statesString(this.Q)}`);
         console.log(`Alphabet: ${this.alphabetString(this.S)}`);
         console.log(`Transition Function: ${this.deltaString(this.d)}`);
         console.log(`Starting State: ${this.stateString(this.q0)}`);
         console.log(`Accepting States: ${this.statesString(this.F)}`);
-        console.log('_________________________________________________________________________________________');
-        // console.log(`Q ${this.statesString(this.Q)}, S ${this.alphabetString(S)}, d ${this.printArrSet(this.d,this.transitionString)}, q0 ${this.stateString(this.q0)}, F ${this.statesString(this.F)}`);
+        console.log(break_string);
     }
 
     private deltaString(d : Delta) {
@@ -39,11 +37,11 @@ class DFA {
 
     private printArrSet(set : arrSet<any>, f : (arg0 : any) => string) {
         let iter = set.values();
-        let r = "{"
+        let r = "{";
         for (const x of iter) {
             r += f(x) + ",";
         }
-        return r.substring(0,r.length-1) + "}"
+        return r.substring(0,r.length-1) + "}";
     }
 
     private statesString(Q : Set<State>) : string {
@@ -115,6 +113,8 @@ class DFA {
         if (!Q.has(q0)) {
             invalid('starting state not in Q');
         }
+
+        //TODO: add delta check
     }
 
     /**
@@ -157,33 +157,10 @@ class DFA {
     eval(w : string) {
         if (!this.validateString(w)) return;
         const res = this._eval(w,this.q0);
-        console.log(`${w} ${res ? "ACCEPTED" : "REJECTED"}`);
+        console.log(`${w === "" ? "''" : w} ${res ? "ACCEPTED" : "REJECTED"}`);
         return res;
     }
 }
-
-let Q = new Set<State>()
-let f = new Set<State>()
-let q0 = {name:0};
-let delta : Delta = new Set<Transition>();
-f.add(q0);
-let q1 = {name:1}
-Q.add(q0);
-Q.add(q1);
-let S : Alphabet = new Set<string>();
-S.add('1');
-S.add('0');
-let r1 : Transition = [q0,'0',q0];
-let r2 : Transition = [q0,'1',q1];
-let r3 : Transition = [q1,'1',q1];
-let r4 : Transition = [q1,'0',q0];
-delta.add(r1).add(r2).add(r3).add(r4);
-let d = new DFA(Q, S,delta,q0,f,"strings that end with a 0 and empty string");
-d.addRule([q0,'1',{name:3}]);
-d.eval('010101110');
-d.eval('01010111');
-d.eval('');
-d.eval('1');
 
 
 
