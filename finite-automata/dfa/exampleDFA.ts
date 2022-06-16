@@ -1,8 +1,5 @@
-import { DFA } from './dfa';
-import { State } from './dfa';
-import { Delta } from './dfa';
-import { Alphabet } from './dfa';
-import { Transition } from './dfa';
+import { DFA,State,Delta,Alphabet,Transition } from './dfa';
+import { SetOp } from './setHelper';
 
 const language_desc = "strings that end with a 0 and empty string";
 
@@ -29,9 +26,20 @@ S.add('1');
 S.add('0');
 
 let d = new DFA(Q, S,delta,q0,f,language_desc);
-
+let complement = d.complement();
 d.addRule([q0,'1',{name:3}]); //invalid rule
-d.eval('010101110'); //1
-d.eval('01010111'); //0
-d.eval(''); //1
-d.eval('1'); //0
+// d.eval('010101110'); //1
+// d.eval('01010111'); //0
+// d.eval(''); //1
+// d.eval('1'); //0
+// d.eval('000000000000010101011010'); //1
+
+let z = ['010101110','01010111','','1','000000000000010101011010'];
+for(let i = 0; i < 5; i++) {
+    console.log(z[i],d.eval(z[i]),complement.eval(z[i]));
+}
+
+
+let s1 = new Set([1,2,3,4,5,6,7,8,9,10]);
+let s2 = new Set(['a','b','c','d','e','f','g','h']);
+let cp = SetOp.cartesianProduct(s1,s2);
