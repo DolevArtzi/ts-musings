@@ -5,7 +5,8 @@ export type Transition = [State,string,State];
 type Rules = Set<Transition>;
 type arrSet<T> = Array<T> | Set<T>;
 const break_string = '_________________________________________________________________________________________';
-export abstract class AbstractDFA {
+
+export class BasicDFA {
     Q : Set<State>;
     S : Alphabet;
     rules : Rules;
@@ -129,7 +130,27 @@ export abstract class AbstractDFA {
         }
     }
 
-    protected abstract delta(curr : State, c : string) : State; 
+    /**
+    *
+    * @param c - a character, which should be in the alphabet
+    * @param curr - starting state before reading @param c
+    * @returns the state that is transitioned to by reading @param c
+    * @throws {TypeError} if there is no rule to transition @param c from 
+    *                     @param curr
+    */
+    delta(curr: State, c: string): State {
+        let newState = undefined;
+        let transitionArr = this.rules.values();
+        
+        for (const rule of transitionArr) {
+            const q1 = rule[0];
+            const c2 = rule[1];
+            if (c === c2 && curr === q1) newState = rule[2]; 
+        }
+        
+        if (newState === undefined) throw new TypeError('undefined transition');
+        return newState;  
+    }
 
     /**
      * evaluate @param w being fed to the DFA starting at 
@@ -146,34 +167,10 @@ export abstract class AbstractDFA {
         return this._eval(w.substring(1),newState);
     }
 
-    eval(w : string) {
+    eval(w : string) : boolean | undefined {
         if (!this.validateString(w)) return;
         const res = this._eval(w,this.q0);
         return res;
-    }
-}
-
-export class BasicDFA extends AbstractDFA {
-    /**
-    *
-    * @param c - a character, which should be in the alphabet
-    * @param curr - starting state before reading @param c
-    * @returns the state that is transitioned to by reading @param c
-    * @throws {TypeError} if there is no rule to transition @param c from 
-    *                     @param curr
-    */
-    protected delta(curr: State, c: string): State {
-        let newState = undefined;
-        let transitionArr = this.rules.values();
-
-        for (const rule of transitionArr) {
-            const q1 = rule[0];
-            const c2 = rule[1];
-            if (c === c2 && curr === q1) newState = rule[2]; 
-        }
-
-        if (newState === undefined) throw new TypeError('undefined transition');
-        return newState;
     }
 }
 
